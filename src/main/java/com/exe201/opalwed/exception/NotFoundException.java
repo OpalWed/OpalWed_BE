@@ -1,6 +1,6 @@
-package com.exe201.opalwed.model.exception;
+package com.exe201.opalwed.exception;
 
-import com.exe201.opalwed.model.dto.response.ResponseObject;
+import com.exe201.opalwed.dto.response.ResponseObject;
 import org.springframework.http.HttpStatus;
 
 public class NotFoundException extends BaseException {
