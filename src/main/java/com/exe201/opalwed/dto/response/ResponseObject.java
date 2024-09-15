@@ -1,4 +1,4 @@
-package com.exe201.opalwed.model.dto.response;
+package com.exe201.opalwed.dto.response;
 
 import lombok.Builder;
 import org.springframework.http.HttpStatus;
