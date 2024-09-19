@@ -59,11 +59,13 @@ public class SecurityConfig {
                 .authorizeHttpRequests(req -> req
                         .requestMatchers(baseUrl + "/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated())
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2ResourceServer(oauth -> oauth.jwt(Customizer.withDefaults()))
+
                 .build();
     }
 
