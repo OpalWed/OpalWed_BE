@@ -12,10 +12,9 @@ public class PartnerService {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @ManyToOne
+    @JoinColumn(name = "PartnerApplicationId")
     private PartnerApplication partnerApplication;
-
     private ServiceType serviceType;
 
 }
