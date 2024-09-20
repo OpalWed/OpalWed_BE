@@ -1,0 +1,17 @@
+services:
+  opal-web:
+    container_name: opal_web
+    image: ${DOCKER_USERNAME}/opal-web:latest
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_NAME: ${DB_NAME}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - 8080:8080
+    networks:
+      - opal-web-networks
+
+networks:
+  opal-web-networks:
+    name: opal_web_networks

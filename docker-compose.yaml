@@ -1,0 +1,7 @@
+services:
+  opal-web:
+    image: ${DOCKER_USERNAME}/opal-web:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      
