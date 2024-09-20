@@ -13,6 +13,7 @@ public class ApplicationImage {
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name = "PartnerApplicationId")
     private PartnerApplication application;
 
     private String url;
