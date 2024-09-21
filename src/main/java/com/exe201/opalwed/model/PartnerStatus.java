@@ -1,7 +1,6 @@
 package com.exe201.opalwed.model;
 
-public enum PartnerApplicationStatus {
-    INITIAL,
+public enum PartnerStatus {
     APPROVED, //display frontend
     CANCELLED
 }
