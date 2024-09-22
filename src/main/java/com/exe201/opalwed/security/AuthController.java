@@ -4,6 +4,7 @@ package com.exe201.opalwed.security;
 import com.exe201.opalwed.dto.ResponseObject;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +26,7 @@ public class AuthController {
                 .data(data)
                 .isSuccess(true)
                 .message("Login successful")
+                .status(HttpStatus.OK)
                 .build();
         return ResponseEntity.ok().body(responseObject);
     }
@@ -36,6 +38,7 @@ public class AuthController {
                 .data(data)
                 .isSuccess(true)
                 .message("Register successful")
+                .status(HttpStatus.OK)
                 .build();
         return ResponseEntity.ok().body(responseObject);
     }

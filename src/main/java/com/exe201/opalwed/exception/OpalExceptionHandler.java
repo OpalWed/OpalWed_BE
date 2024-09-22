@@ -58,7 +58,7 @@ public class OpalExceptionHandler {
         responseMap.put("message", invalidEx.getMessage());
 
         ResponseObject responseObject = ResponseObject.builder()
-                .message("Invalid argument")
+                .message(invalidEx.getMessage())
                 .isSuccess(false)
                 .data(responseMap)
                 .status(HttpStatus.BAD_REQUEST)
