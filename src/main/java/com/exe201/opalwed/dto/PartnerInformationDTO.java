@@ -1,6 +1,7 @@
 package com.exe201.opalwed.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,13 +17,14 @@ public class PartnerInformationDTO {
 
     // Account account; dto later?
 
-    @NotBlank
+    @NotBlank(message = "Tên không được để trống!")
     String fullName;
 
-    @NotBlank
+    @NotBlank(message = "Số điện thoại không được để trống!")
+    @Pattern(regexp = "^0\\d{9}$", message = "Số điện thoại không hợp lệ!")
     String phone;
 
-    @NotBlank
+    @NotBlank(message = "Địa chỉ không được để trống!")
     String address;
 
     String description = "";
