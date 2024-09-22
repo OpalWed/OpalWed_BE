@@ -1,8 +1,11 @@
 package com.exe201.opalwed.security;
 
 
+import com.exe201.opalwed.dto.ResponseObject;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -15,13 +18,29 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public Map<String, Object> login(@Valid @RequestBody LoginRequest request) {
-        return authService.createLoginInfo(request);
+    public ResponseEntity<ResponseObject> login(@Valid @RequestBody LoginRequest request) {
+
+        Map<String, Object> data = authService.createLoginInfo(request);
+
+        var responseObject = ResponseObject.builder()
+                .data(data)
+                .isSuccess(true)
+                .message("Login successful")
+                .status(HttpStatus.OK)
+                .build();
+        return ResponseEntity.ok().body(responseObject);
     }
 
     @PostMapping("/register")
-    public Map<String, Object> register(@Valid @RequestBody RegisterRequest request) {
-        return authService.register(request);
+    public ResponseEntity<ResponseObject> register(@Valid @RequestBody RegisterRequest request) {
+        Map<String, Object> data =  authService.register(request);
+        var responseObject = ResponseObject.builder()
+                .data(data)
+                .isSuccess(true)
+                .message("Register successful")
+                .status(HttpStatus.OK)
+                .build();
+        return ResponseEntity.ok().body(responseObject);
     }
 
 }

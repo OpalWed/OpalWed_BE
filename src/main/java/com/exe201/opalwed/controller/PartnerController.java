@@ -5,6 +5,7 @@ import com.exe201.opalwed.dto.ResponseObject;
 import com.exe201.opalwed.service.PartnerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,6 +28,7 @@ public class PartnerController {
                 .message("Add new partner successfully!")
                 .isSuccess(true)
                 .data(data)
+                .status(HttpStatus.OK)
                 .build();
         return ResponseEntity.ok().body(responseObject);
 

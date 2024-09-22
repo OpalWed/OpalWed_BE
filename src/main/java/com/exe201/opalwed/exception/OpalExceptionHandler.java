@@ -1,5 +1,6 @@
 package com.exe201.opalwed.exception;
 
+import com.exe201.opalwed.dto.ResponseObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -17,9 +18,9 @@ public class OpalExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(OpalExceptionHandler.class);
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler({MethodArgumentNotValidException.class})
-    public ResponseEntity<Map<String, Object>> handleInvalidArgument(
+    public ResponseEntity<ResponseObject> handleInvalidArgument(
             MethodArgumentNotValidException invalidEx) {
 
         Map<String, Object> responseMap = new HashMap<>();
@@ -33,13 +34,20 @@ public class OpalExceptionHandler {
                 ));
 
         responseMap.put("errors", errorMap);
-        return new ResponseEntity<>(responseMap, HttpStatus.BAD_REQUEST);
+
+        ResponseObject responseObject = ResponseObject.builder()
+                .message("Invalid argument")
+                .isSuccess(false)
+                .data(responseMap)
+                .status(HttpStatus.BAD_REQUEST)
+                .build();
+
+        return ResponseEntity.ok().body(responseObject);
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler({OpalException.class})
-    //This handler used for exception in service layer
-    public ResponseEntity<Map<String, Object>> handleJourneyConstraintException(
+    public ResponseEntity<ResponseObject> handleJourneyConstraintException(
             OpalException invalidEx) {
         logger.info("Handling OpalException: {}", invalidEx.getMessage(), invalidEx);
 
@@ -48,6 +56,13 @@ public class OpalExceptionHandler {
 
         responseMap.put("errors", errorMap);
         responseMap.put("message", invalidEx.getMessage());
-        return new ResponseEntity<>(responseMap, HttpStatus.BAD_REQUEST);
+
+        ResponseObject responseObject = ResponseObject.builder()
+                .message(invalidEx.getMessage())
+                .isSuccess(false)
+                .data(responseMap)
+                .status(HttpStatus.BAD_REQUEST)
+                .build();
+        return ResponseEntity.ok().body(responseObject);
     }
 }

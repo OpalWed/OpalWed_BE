@@ -7,7 +7,8 @@ import org.springframework.http.HttpStatus;
 public record ResponseObject(
         Object data,
         Boolean isSuccess,
-        String message
+        String message,
+        HttpStatus status
 ) {
 
 }
