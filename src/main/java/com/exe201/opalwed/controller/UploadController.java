@@ -12,7 +12,7 @@ import java.io.IOException;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/files")
+@RequestMapping("${api.endpoint.base-url}/files")
 public class UploadController {
 
     private final FirebaseService firebaseService;
