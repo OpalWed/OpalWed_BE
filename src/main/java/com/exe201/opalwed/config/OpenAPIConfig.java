@@ -19,7 +19,8 @@ import io.swagger.v3.oas.annotations.servers.Server;
                 version = "1.0"
         ),
         servers = {
-                @Server(description = "DEV ENV", url = "http://localhost:8080")
+                @Server(description = "DEV ENV", url = "http://localhost:8080"),
+                @Server(description = "STAG ENV", url = "https://api.opalwed.id.vn")
         },
         security = {
                 @SecurityRequirement(
