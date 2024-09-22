@@ -1,6 +1,5 @@
 package com.exe201.opalwed.security;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,9 +9,8 @@ import lombok.Getter;
 public class LoginRequest {
 
     @NotEmpty(message = "Email không được để trống!")
-    @Email(message = "Email không hợp lệ!")
     String email;
 
-    @NotEmpty(message = "Password không được để trống")
+    @NotEmpty(message = "Mật khẩu không được để trống")
     String password;
 }

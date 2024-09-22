@@ -36,10 +36,10 @@ public class AuthService {
         Map<String, Object> result = new HashMap<>();
 
         Account account = accountRepository.findAccountByEmail(request.getEmail())
-                .orElseThrow(() -> new OpalException("Email not exists"));
+                .orElseThrow(() -> new OpalException("Email không tồn tại!"));
 
         if (!passwordEncoder.matches(request.getPassword(), account.getPassword())) {
-            throw new OpalException("Invalid password");
+            throw new OpalException("Sai mật khẩu!");
         }
 
         String token = jwtProvider.createToken(account);
@@ -53,7 +53,7 @@ public class AuthService {
 
     public Map<String, Object> register(RegisterRequest request) {
         if (accountRepository.existsAccountByEmail(request.getEmail())) {
-            throw new OpalException("Email exists");
+            throw new OpalException("Email đã tồn tại!");
         }
 
         Account newAccount = Account.builder()
@@ -130,10 +130,10 @@ public class AuthService {
 
                 return result;
             } else {
-                throw new OpalException("Invalid Google token");
+                throw new OpalException("Đăng nhập Google thất bại!");
             }
         } catch (Exception e) {
-            throw new OpalException("Login google failed");
+            throw new OpalException("Đăng nhập Google thất bại!");
         }
     }
 
