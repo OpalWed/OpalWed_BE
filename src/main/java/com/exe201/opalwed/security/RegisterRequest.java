@@ -13,7 +13,7 @@ public class RegisterRequest {
     String email;
 
     @NotEmpty(message = "Mật khẩu không được để trống!")
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$", message = "Số điện thoại không hợp lê!")
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$", message = "Mật khẩu không hợp lê!")
     String password;
 
     @NotNull(message = "Tên không được để trống!")
