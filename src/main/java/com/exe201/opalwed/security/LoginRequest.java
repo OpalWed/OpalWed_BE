@@ -8,10 +8,11 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class LoginRequest {
-    @NotEmpty
-    @Email
+
+    @NotEmpty(message = "Email không được để trống!")
+    @Email(message = "Email không hợp lệ!")
     String email;
 
-    @NotEmpty
+    @NotEmpty(message = "Password không được để trống")
     String password;
 }
