@@ -59,7 +59,7 @@ public class PartnerServiceImpl implements PartnerService {
                 .partnerInformation(information)
                 .note(req.getNote())
                 .successEvent(0)
-                .status(PartnerStatus.APPROVED)
+                .status(PartnerStatus.PENDING)
                 .build();
 
         if (req.getUtilities() != null) {
