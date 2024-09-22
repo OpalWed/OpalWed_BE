@@ -1,6 +1,7 @@
 package com.exe201.opalwed.exception;
 
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,8 +11,6 @@ public class OpalException extends RuntimeException {
 
     private final Map<String, String> errorsMap = new HashMap<>();
 
-    public OpalException() {
-    }
 
     public OpalException(String message) {
         super(message);
