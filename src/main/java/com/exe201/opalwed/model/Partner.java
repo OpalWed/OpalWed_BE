@@ -21,12 +21,12 @@ public class Partner {
     @OneToOne(cascade = CascadeType.PERSIST)
     private Information partnerInformation;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "partner", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "partner",cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PartnerUtility> utilities;
 
     private PartnerStatus status;
 
-    @OneToMany(fetch = FetchType.EAGER,mappedBy = "partner", cascade = CascadeType.PERSIST)
+    @OneToMany(fetch = FetchType.EAGER,mappedBy = "partner", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PartnerImage> images;
 
     private int successEvent;
