@@ -2,11 +2,15 @@ package com.exe201.opalwed.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "PartnerImage")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class PartnerImage {
 
     public PartnerImage(String url) {

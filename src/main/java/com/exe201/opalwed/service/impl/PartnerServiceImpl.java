@@ -3,6 +3,8 @@ package com.exe201.opalwed.service.impl;
 import com.exe201.opalwed.dto.PartnerImageDTO;
 import com.exe201.opalwed.dto.PartnerInformationDTO;
 import com.exe201.opalwed.dto.PartnerUtilityDTO;
+import com.exe201.opalwed.dto.ResponseObject;
+import com.exe201.opalwed.exception.OpalException;
 import com.exe201.opalwed.model.*;
 import com.exe201.opalwed.repository.PartnerRepository;
 import com.exe201.opalwed.service.PartnerService;
@@ -10,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -76,4 +79,101 @@ public class PartnerServiceImpl implements PartnerService {
 
         return mapEntityToDTO(partner);
     }
+
+    @Override
+    @Transactional
+    public ResponseObject updatePartner(PartnerInformationDTO req) {
+
+        Partner partner = partnerRepository.findById(req.getPartnerId()).orElseThrow(()-> new OpalException("Partner không tồn tại!"));
+        partner.getPartnerInformation().setFullName(req.getFullName());
+        partner.getPartnerInformation().setPhone(req.getPhone());
+        partner.getPartnerInformation().setAddress(req.getAddress());
+        partner.getPartnerInformation().setDescription(req.getDescription());
+        partner.getPartnerInformation().setImageUrl(req.getImageUrl());
+        partner.setSuccessEvent(req.getSuccessEvent());
+        partner.setNote(req.getNote());
+        partner.setStatus(PartnerStatus.valueOf(req.getStatus()));
+
+        if (req.getUtilities() != null) {
+            // Get the current utilities from the partner
+            Set<PartnerUtility> currentUtilities = partner.getUtilities();
+
+            // Create a new Set for updated utilities
+            Set<PartnerUtility> updatedUtilities = new HashSet<>();
+
+            // Add all new utilities from the request
+            for (PartnerUtilityDTO dto : req.getUtilities()) {
+                PartnerUtility newUtility = new PartnerUtility(UtilityType.valueOf(dto.getUtilityType()));
+                newUtility.setPartner(partner); // Ensure bidirectional mapping
+                updatedUtilities.add(newUtility);
+            }
+
+            // Remove outdated utilities
+            currentUtilities.removeIf(existingUtility ->
+                    updatedUtilities.stream().noneMatch(newUtility ->
+                            newUtility.getUtilityType().equals(existingUtility.getUtilityType()))
+            );
+
+            // Add new utilities that aren't already in the current set
+            updatedUtilities.forEach(newUtility -> {
+                if (currentUtilities.stream().noneMatch(existingUtility ->
+                        existingUtility.getUtilityType().equals(newUtility.getUtilityType()))) {
+                    currentUtilities.add(newUtility); // Add the new utility
+                }
+            });
+
+            // Set the updated utilities back to the partner
+            partner.setUtilities(currentUtilities);
+        }
+
+        // Update images if provided
+        if (req.getImages() != null) {
+            // Get the current images from the partner
+            Set<PartnerImage> currentImages = partner.getImages();
+
+            // Create a new Set for updated images
+            Set<PartnerImage> updatedImages = new HashSet<>();
+
+            // Add all new images from the request
+            for (PartnerImageDTO dto : req.getImages()) {
+                PartnerImage newImage = new PartnerImage(dto.getUrl());
+                newImage.setPartner(partner); // Ensure bidirectional mapping
+                updatedImages.add(newImage);
+            }
+            // Remove outdated images
+            currentImages.removeIf(existingImage ->
+                    updatedImages.stream().noneMatch(newImage ->
+                            newImage.getUrl().equals(existingImage.getUrl()))
+            );
+
+            // Add new images that aren't already in the current set
+            updatedImages.forEach(newImage -> {
+                if (currentImages.stream().noneMatch(existingImage ->
+                        existingImage.getUrl().equals(newImage.getUrl()))) {
+                    currentImages.add(newImage); // Add the new image
+                }
+            });
+            // Set the updated images back to the partner
+            partner.setImages(currentImages);
+        }
+        partner = partnerRepository.save(partner);
+        return ResponseObject.builder()
+                .message("Cập nhật partner thành công!")
+                .isSuccess(true)
+                .data(mapEntityToDTO(partner))
+                .build();
+    }
+    @Override
+    public ResponseObject updatePartnerStatus(Long partnerId, String status) {
+        Partner partner = partnerRepository.findById(partnerId).orElseThrow(()-> new OpalException("Không tìm thấy partner!"));
+        partner.setStatus(PartnerStatus.valueOf(status));
+        partner = partnerRepository.save(partner);
+        return ResponseObject.builder()
+                .message("Cập nhật trạng thái partner thành công!")
+                .isSuccess(true)
+                .data(mapEntityToDTO(partner))
+                .build();
+    }
+
+
 }
