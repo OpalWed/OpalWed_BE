@@ -3,6 +3,7 @@ package com.exe201.opalwed.security;
 import com.exe201.opalwed.dto.ResponseObject;
 import com.exe201.opalwed.exception.OpalException;
 import com.exe201.opalwed.model.Account;
+import com.exe201.opalwed.model.AccountStatus;
 import com.exe201.opalwed.model.Information;
 import com.exe201.opalwed.model.Role;
 import com.exe201.opalwed.repository.AccountRepository;
@@ -60,6 +61,7 @@ public class AuthService {
 
         Account newAccount = Account.builder()
                 .email(request.getEmail())
+                .status(AccountStatus.DE_ACTIVE)
                 .password(passwordEncoder.encode(request.getPassword()))
                 .accountRole(Role.CUSTOMER)
                 .build();

@@ -21,6 +21,8 @@ public class Account {
 
     private String password;
 
+    private AccountStatus status;
+
     private Role accountRole;
 
 }
