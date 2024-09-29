@@ -1,5 +1,6 @@
 package com.exe201.opalwed.security;
 
+import com.exe201.opalwed.dto.ResponseObject;
 import com.exe201.opalwed.exception.OpalException;
 import com.exe201.opalwed.model.Account;
 import com.exe201.opalwed.model.Information;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -80,6 +82,26 @@ public class AuthService {
 
         return result;
     }
+
+    public ResponseObject changePassword(Authentication authentication, ChangePasswordRequest request) {
+
+        if(!request.getNewPassword().equals(request.getConfirmPassword())){
+            throw new OpalException("Mật khẩu mới không trùng với mật khẩu xác nhận lại!");
+        }
+        Account account = accountRepository.findAccountByEmail(authentication.getName())
+                .orElseThrow(() -> new OpalException("Tài khoản không tồn tại!"));
+        if (!passwordEncoder.matches(request.getOldPassword(), account.getPassword())) {
+            throw new OpalException("Mật khẩu cũ không đúng!");
+        }
+        account.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        accountRepository.save(account);
+        return ResponseObject.builder()
+                .isSuccess(true)
+                .status(HttpStatus.OK)
+                .message("Đổi mật khẩu thành công!")
+                .build();
+    }
+
 
     public Map<String, Object> loginWithGoogle(String requestToken) {
 

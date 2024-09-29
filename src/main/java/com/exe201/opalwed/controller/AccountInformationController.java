@@ -1,10 +1,13 @@
 package com.exe201.opalwed.controller;
 
+import com.exe201.opalwed.dto.ChangeProfileRequest;
 import com.exe201.opalwed.dto.ResponseObject;
 import com.exe201.opalwed.service.AccountInformationService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,6 +46,13 @@ public class AccountInformationController {
     public ResponseObject getCurrentUserInfo(Authentication authentication) {
         return service.getCurrentUserInfo(authentication);
     }
+
+    @PutMapping("/update")
+    @Operation(summary = "Update profile",description = "Update profile of user, đừng để field nào bị trống, nào không đổi thì truyền data cũ vào")
+    public ResponseObject updateAccount(@Valid @RequestBody ChangeProfileRequest request, Authentication authentication) {
+        return service.updateAccount(authentication,request);
+    }
+
 
 
 

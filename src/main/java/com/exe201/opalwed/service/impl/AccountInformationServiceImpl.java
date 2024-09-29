@@ -1,5 +1,6 @@
 package com.exe201.opalwed.service.impl;
 
+import com.exe201.opalwed.dto.ChangeProfileRequest;
 import com.exe201.opalwed.dto.ResponseObject;
 import com.exe201.opalwed.exception.OpalException;
 import com.exe201.opalwed.model.Account;
@@ -81,6 +82,33 @@ public class AccountInformationServiceImpl implements AccountInformationService 
                 .isSuccess(true)
                 .status(HttpStatus.OK)
                 .message("Thông tin cá nhân")
+                .build();
+    }
+
+    @Override
+    public ResponseObject updateAccount(Authentication authentication, ChangeProfileRequest request) {
+
+        if (authentication == null || authentication.getName() == null) {
+            throw new OpalException("Yêu cầu đăng nhập");
+        }
+        Information information = infoRepo.getInformationByAccountEmail(authentication.getName())
+                .orElseThrow(() -> new OpalException("Yêu cầu đăng nhập"));
+
+        information.setFullName(request.getFullName());
+        information.setPhone(request.getPhone());
+        information.setAddress(request.getAddress());
+        information.setDescription(request.getDescription());
+        information.setImageUrl(request.getImageUrl());
+
+        information = infoRepo.save(information);
+
+        information.getAccount().setPassword("");
+
+        return ResponseObject.builder()
+                .data(information)
+                .isSuccess(true)
+                .status(HttpStatus.OK)
+                .message("Thay đổi thông tin cá nhân thành công!")
                 .build();
     }
 }
