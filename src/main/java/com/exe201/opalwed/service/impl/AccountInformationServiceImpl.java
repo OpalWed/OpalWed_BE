@@ -4,6 +4,7 @@ import com.exe201.opalwed.dto.ChangeProfileRequest;
 import com.exe201.opalwed.dto.ResponseObject;
 import com.exe201.opalwed.exception.OpalException;
 import com.exe201.opalwed.model.Account;
+import com.exe201.opalwed.model.AccountStatus;
 import com.exe201.opalwed.model.Information;
 import com.exe201.opalwed.repository.AccountRepository;
 import com.exe201.opalwed.repository.InformationRepository;
@@ -109,6 +110,21 @@ public class AccountInformationServiceImpl implements AccountInformationService 
                 .isSuccess(true)
                 .status(HttpStatus.OK)
                 .message("Thay đổi thông tin cá nhân thành công!")
+                .build();
+    }
+
+    @Override
+    public ResponseObject updateAccountStatus(Long id, AccountStatus status) {
+        Account account = accountRepo.findById(id).orElseThrow(() -> new OpalException(String.format("Không tồn tại ID: %s", id)));
+        account.setStatus(status);
+        account = accountRepo.save(account);
+        account.setPassword("");
+
+        return ResponseObject.builder()
+                .data(account)
+                .isSuccess(true)
+                .status(HttpStatus.OK)
+                .message("Thay đổi trạng thái tài khoản thành công")
                 .build();
     }
 }

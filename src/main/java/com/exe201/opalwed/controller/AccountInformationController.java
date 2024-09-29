@@ -2,10 +2,12 @@ package com.exe201.opalwed.controller;
 
 import com.exe201.opalwed.dto.ChangeProfileRequest;
 import com.exe201.opalwed.dto.ResponseObject;
+import com.exe201.opalwed.model.AccountStatus;
 import com.exe201.opalwed.service.AccountInformationService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("${api.endpoint.base-url}/accountInfo")
 @RequiredArgsConstructor
+@Slf4j
 public class AccountInformationController {
 
     private final AccountInformationService service;
@@ -54,6 +57,12 @@ public class AccountInformationController {
     }
 
 
+    @PutMapping("/change-account-status")
+    @Operation(description = "Update status account by account id and status enum-string")
+    //@PreAuthorize("hasRole('ADMIN')")
+    public ResponseObject updateAccountStatus(@RequestParam Long id, @RequestParam AccountStatus status) {
+        return service.updateAccountStatus(id, status);
+    }
 
 
 

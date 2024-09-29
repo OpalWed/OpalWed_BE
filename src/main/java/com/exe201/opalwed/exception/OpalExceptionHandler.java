@@ -9,6 +9,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -61,6 +62,19 @@ public class OpalExceptionHandler {
                 .message(invalidEx.getMessage())
                 .isSuccess(false)
                 .data(responseMap)
+                .status(HttpStatus.BAD_REQUEST)
+                .build();
+        return ResponseEntity.ok().body(responseObject);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @ExceptionHandler({MethodArgumentTypeMismatchException.class})
+    public ResponseEntity<ResponseObject> handleMismatchArgumentException(
+            MethodArgumentTypeMismatchException ex) {
+        ResponseObject responseObject = ResponseObject.builder()
+                .message(String.format("Giá trị truyền vào không hợp lệ cho trường: %s", ex.getName()))
+                .isSuccess(false)
+                .data(null)
                 .status(HttpStatus.BAD_REQUEST)
                 .build();
         return ResponseEntity.ok().body(responseObject);
