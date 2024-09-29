@@ -18,6 +18,8 @@ public class Partner {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String partnerName;
+
     @OneToOne(cascade = CascadeType.PERSIST)
     private Information partnerInformation;
 

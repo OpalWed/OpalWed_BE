@@ -27,6 +27,7 @@ public class PartnerServiceImpl implements PartnerService {
         PartnerInformationDTO dto = PartnerInformationDTO.builder()
                 .informationId(partner.getPartnerInformation().getId())
                 .fullName(partner.getPartnerInformation().getFullName())
+                .partnerName(partner.getPartnerName())
                 .phone(partner.getPartnerInformation().getPhone())
                 .address(partner.getPartnerInformation().getAddress())
                 .description(partner.getPartnerInformation().getDescription())
@@ -59,6 +60,7 @@ public class PartnerServiceImpl implements PartnerService {
                 .build();
 
         Partner partner = Partner.builder()
+                .partnerName(req.getPartnerName())
                 .partnerInformation(information)
                 .note(req.getNote())
                 .successEvent(0)
@@ -90,6 +92,7 @@ public class PartnerServiceImpl implements PartnerService {
         partner.getPartnerInformation().setAddress(req.getAddress());
         partner.getPartnerInformation().setDescription(req.getDescription());
         partner.getPartnerInformation().setImageUrl(req.getImageUrl());
+        partner.setPartnerName(req.getPartnerName());
         partner.setSuccessEvent(req.getSuccessEvent());
         partner.setNote(req.getNote());
         partner.setStatus(PartnerStatus.valueOf(req.getStatus()));

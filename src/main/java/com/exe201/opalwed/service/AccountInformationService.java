@@ -9,4 +9,6 @@ public interface AccountInformationService {
     ResponseObject getAllInfos();
 
     ResponseObject getCurrentUserInfo(Authentication authentication);
+
+    ResponseObject getAccountInfoByUserId(Long id);
 }

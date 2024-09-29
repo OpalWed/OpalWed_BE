@@ -38,7 +38,11 @@ public class AccountInformationServiceImpl implements AccountInformationService 
     @Override
     public ResponseObject getAllInfos() {
         List<Information> data = infoRepo.findAll();
-        data.forEach(x -> x.getAccount().setPassword(""));
+        data.forEach(x -> {
+            if (x.getAccount() != null) {
+                x.getAccount().setPassword("");
+            }
+        });
 
         return ResponseObject.builder()
                 .data(data)
@@ -59,6 +63,21 @@ public class AccountInformationServiceImpl implements AccountInformationService 
 
         return ResponseObject.builder()
                 .data(information)
+                .isSuccess(true)
+                .status(HttpStatus.OK)
+                .message("Thông tin cá nhân")
+                .build();
+    }
+
+    @Override
+    public ResponseObject getAccountInfoByUserId(Long id) {
+        Information info = infoRepo.findById(id).orElseThrow(() -> new OpalException("ID không tồn tại"));
+        if (info.getAccount() != null) {
+            info.getAccount().setPassword("");
+        }
+
+        return ResponseObject.builder()
+                .data(info)
                 .isSuccess(true)
                 .status(HttpStatus.OK)
                 .message("Thông tin cá nhân")
