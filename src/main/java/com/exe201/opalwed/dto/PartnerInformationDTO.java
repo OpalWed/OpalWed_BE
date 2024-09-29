@@ -20,6 +20,9 @@ public class PartnerInformationDTO {
     @NotBlank(message = "Tên không được để trống!")
     String fullName;
 
+    @NotBlank(message = "Tên của bên cung cấp dịch vụ không được để trống!")
+    String partnerName;
+
     @NotBlank(message = "Số điện thoại không được để trống!")
     @Pattern(regexp = "^0\\d{9}$", message = "Số điện thoại không hợp lệ!")
     String phone;
