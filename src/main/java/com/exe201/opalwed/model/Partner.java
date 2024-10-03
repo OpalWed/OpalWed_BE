@@ -31,6 +31,9 @@ public class Partner {
     @OneToMany(fetch = FetchType.EAGER,mappedBy = "partner", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PartnerImage> images;
 
+    @OneToMany(fetch = FetchType.EAGER,mappedBy = "partner", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Product> products;
+
     private int successEvent;
 
     private String note;
@@ -43,5 +46,10 @@ public class Partner {
     public void setUtilities(Set<PartnerUtility> utilities) {
         utilities.forEach(x -> x.setPartner(this));
         this.utilities = utilities;
+    }
+
+    public void setProducts(Set<Product> products) {
+        products.forEach(p -> p.setPartner(this));
+        this.products = products;
     }
 }
