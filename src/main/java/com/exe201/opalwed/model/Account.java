@@ -1,5 +1,6 @@
 package com.exe201.opalwed.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,5 +25,9 @@ public class Account {
     private AccountStatus status;
 
     private Role accountRole;
+
+    @JsonIgnore
+    @OneToOne(cascade = CascadeType.ALL)
+    private OTPInformation otp;
 
 }

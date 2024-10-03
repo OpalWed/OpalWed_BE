@@ -2,25 +2,28 @@ package com.exe201.opalwed.security;
 
 import com.exe201.opalwed.dto.ResponseObject;
 import com.exe201.opalwed.exception.OpalException;
-import com.exe201.opalwed.model.Account;
-import com.exe201.opalwed.model.AccountStatus;
-import com.exe201.opalwed.model.Information;
-import com.exe201.opalwed.model.Role;
+import com.exe201.opalwed.model.*;
 import com.exe201.opalwed.repository.AccountRepository;
 import com.exe201.opalwed.repository.InformationRepository;
 
+import com.exe201.opalwed.repository.OTPInformationRepository;
+import com.exe201.opalwed.service.OpalMailService;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -28,12 +31,15 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService {
 
     private final JwtProvider jwtProvider;
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
     private final InformationRepository informationRepository;
+    private final OTPInformationRepository otpRepo;
+    private final OpalMailService mailService;
 
     public Map<String, Object> createLoginInfo(LoginRequest request) {
         Map<String, Object> result = new HashMap<>();
@@ -54,7 +60,7 @@ public class AuthService {
         return result;
     }
 
-    public Map<String, Object> register(RegisterRequest request) {
+    public ResponseObject register(RegisterRequest request) {
         if (accountRepository.existsAccountByEmail(request.getEmail())) {
             throw new OpalException("Email đã tồn tại!");
         }
@@ -74,20 +80,13 @@ public class AuthService {
                 .imageUrl(request.getImageUrl())
                 .build();
 
-        newInformation = informationRepository.save(newInformation);
-        String token = jwtProvider.createToken(newInformation.getAccount());
-
-        Map<String, Object> result = new HashMap<>();
-        newAccount.setPassword("");
-        result.put("userInfo", newAccount);
-        result.put("token", token);
-
-        return result;
+        informationRepository.save(newInformation);
+        return ResponseObject.builder().isSuccess(true).status(HttpStatus.OK).message("Tạo tài khoản thành công!").build();
     }
 
     public ResponseObject changePassword(Authentication authentication, ChangePasswordRequest request) {
 
-        if(!request.getNewPassword().equals(request.getConfirmPassword())){
+        if (!request.getNewPassword().equals(request.getConfirmPassword())) {
             throw new OpalException("Mật khẩu mới không trùng với mật khẩu xác nhận lại!");
         }
         Account account = accountRepository.findAccountByEmail(authentication.getName())
@@ -129,9 +128,9 @@ public class AuthService {
                 Optional<Account> userAccountCheck = accountRepository.findAccountByEmail(email);
                 Account userAccount;
                 Information newInformation = null;
-                if(userAccountCheck.isPresent()){
+                if (userAccountCheck.isPresent()) {
                     userAccount = userAccountCheck.get();
-                }else{
+                } else {
                     userAccount = Account.builder()
                             .email(email)
                             .password(passwordEncoder.encode(UUID.randomUUID().toString()))
@@ -161,4 +160,57 @@ public class AuthService {
         }
     }
 
+    @Transactional(rollbackFor = Throwable.class)
+    public ResponseObject sendOtp(String email) {
+        Account account = accountRepository.findAccountByEmail(email).orElseThrow(() -> new OpalException("Tài khoản không tồn tại"));
+
+        if (account.getStatus() == AccountStatus.ACTIVE) {
+            return ResponseObject.builder()
+                    .message("Tài khoản đã xác thực")
+                    .isSuccess(false)
+                    .status(HttpStatus.OK)
+                    .build();
+        }
+
+        if (account.getOtp() != null) {
+            account.getOtp().resetOTP();
+        } else {
+            account.setOtp(new OTPInformation());
+        }
+        account = accountRepository.save(account);
+        try {
+            mailService.sendOTP(account);
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            throw new OpalException("Gửi OTP thất bại, vui lòng thử lại sau!");
+        }
+        return ResponseObject.builder()
+                .status(HttpStatus.OK).message("Gửi OTP thành công").isSuccess(true).build();
+    }
+
+    public ResponseObject validateOTP(ValidateOTPRequest request) {
+        Account account = accountRepository.findAccountByEmail(request.getEmail()).orElseThrow(() -> new OpalException("Tài khoản không tồn tại"));
+
+        OTPInformation otp = account.getOtp();
+        if (!otp.getOtpCode().equals(request.otp)) {
+            return ResponseObject.builder()
+                    .message("Mã OTP không chính xác")
+                    .isSuccess(false)
+                    .status(HttpStatus.BAD_REQUEST)
+                    .build();
+        }
+        if (LocalDateTime.now().isAfter(otp.getExpire())) {
+            return ResponseObject.builder()
+                    .message("Mã OTP hết hạn!")
+                    .isSuccess(false)
+                    .status(HttpStatus.BAD_REQUEST)
+                    .build();
+        }
+        account.setStatus(AccountStatus.ACTIVE);
+        account.setOtp(null);
+        accountRepository.saveAndFlush(account);
+        otpRepo.delete(otp);
+
+        return ResponseObject.builder().status(HttpStatus.OK).isSuccess(true).message("Xác thực thành công!").build();
+    }
 }
