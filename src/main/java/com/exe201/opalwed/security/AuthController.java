@@ -34,14 +34,18 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<ResponseObject> register(@Valid @RequestBody RegisterRequest request) {
-        Map<String, Object> data =  authService.register(request);
-        var responseObject = ResponseObject.builder()
-                .data(data)
-                .isSuccess(true)
-                .message("Register successful")
-                .status(HttpStatus.OK)
-                .build();
-        return ResponseEntity.ok().body(responseObject);
+        ResponseObject data =  authService.register(request);
+        return ResponseEntity.ok().body(data);
+    }
+
+    @GetMapping("/requestOTP")
+    public ResponseEntity<ResponseObject> getOtpByMail(@RequestParam String email) {
+        return ResponseEntity.ok().body(authService.sendOtp(email));
+    }
+
+    @PostMapping("/validateOTP")
+    public ResponseEntity<ResponseObject> getOtpByMail(@RequestBody ValidateOTPRequest request) {
+        return ResponseEntity.ok().body(authService.validateOTP(request));
     }
 
     @PutMapping("/update-password")
