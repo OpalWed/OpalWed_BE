@@ -20,22 +20,34 @@ public class OpalMailServiceImpl implements OpalMailService {
 
     @Override
     public void sendOTP(Account account) throws MessagingException {
-        // Create a MimeMessage instead of SimpleMailMessage
+        String subject = "Chứng thực tài khoản";
+        String messageBody = "<p>Cảm ơn bạn đã đăng ký tài khoản tại OpalWed.</p>";
+
+        sendOtpEmail(account, subject, messageBody);
+    }
+
+    @Override
+    public void sendOTPForPassword(Account account) throws MessagingException {
+        String subject = "Quên mật khẩu";
+        String messageBody = "<p>Để cập nhật mật khẩu mới, vui lòng sử dụng mã OTP dưới đây.</p>";
+
+        sendOtpEmail(account, subject, messageBody);
+    }
+
+    private void sendOtpEmail(Account account, String subject, String messageBody) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-        // Set the email properties
         helper.setFrom("OpalWed");
         helper.setTo(account.getEmail());
-        helper.setSubject("Chứng thực tài khoản");
+        helper.setSubject(subject);
 
-        // HTML template for the email body
         String content = "<html>"
                 + "<body>"
                 + "<div style='font-family: Arial, sans-serif; text-align: center; padding: 20px;'>"
                 + "<img src='cid:logoImage' style='width: 100px; height: 100px;' alt='OpalWed Logo'/>"
                 + "<h2 style='color: #4CAF50;'>Chào bạn, " + account.getEmail() + "!</h2>"
-                + "<p>Cảm ơn bạn đã đăng ký tài khoản tại OpalWed.</p>"
+                + messageBody
                 + "<p>Mã OTP của bạn là:</p>"
                 + "<h3 style='background-color: #f0f0f0; display: inline-block; padding: 10px; border-radius: 5px;'>"
                 + account.getOtp().getOtpCode() + "</h3>"
@@ -48,14 +60,11 @@ public class OpalMailServiceImpl implements OpalMailService {
                 + "</body>"
                 + "</html>";
 
-        // Set the HTML content of the email
         helper.setText(content, true);
 
-        // Attach the logo (assuming it's in the classpath as 'static/images/logo.png')
         ClassPathResource logo = new ClassPathResource("images/opalwed-logo.png");
         helper.addInline("logoImage", logo);
 
-        // Send the email
         mailSender.send(message);
     }
 }

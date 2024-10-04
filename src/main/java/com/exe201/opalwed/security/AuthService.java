@@ -8,7 +8,7 @@ import com.exe201.opalwed.repository.InformationRepository;
 
 import com.exe201.opalwed.repository.OTPInformationRepository;
 import com.exe201.opalwed.service.OpalMailService;
-import jakarta.persistence.EntityManager;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.json.JsonParser;
@@ -61,13 +61,17 @@ public class AuthService {
     }
 
     public ResponseObject register(RegisterRequest request) {
-        if (accountRepository.existsAccountByEmail(request.getEmail())) {
+        Optional<Account> existAccount = accountRepository.findAccountByEmail(request.getEmail());
+        if (existAccount.isPresent()) {
+            if (existAccount.get().getStatus().equals(AccountStatus.PENDING)) {
+                return updateOTPThenSend(existAccount.get());
+            }
             throw new OpalException("Email đã tồn tại!");
         }
 
         Account newAccount = Account.builder()
                 .email(request.getEmail())
-                .status(AccountStatus.DE_ACTIVE)
+                .status(AccountStatus.PENDING)
                 .password(passwordEncoder.encode(request.getPassword()))
                 .accountRole(Role.CUSTOMER)
                 .build();
@@ -82,6 +86,23 @@ public class AuthService {
 
         informationRepository.save(newInformation);
         return ResponseObject.builder().isSuccess(true).status(HttpStatus.OK).message("Tạo tài khoản thành công!").build();
+    }
+
+    private ResponseObject updateOTPThenSend(Account account) {
+        if (account.getOtp() != null) {
+            account.getOtp().resetOTP();
+        } else {
+            account.setOtp(new OTPInformation());
+        }
+        account = accountRepository.save(account);
+        try {
+            mailService.sendOTP(account);
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            throw new OpalException("Gửi OTP thất bại, vui lòng thử lại sau!");
+        }
+        return ResponseObject.builder()
+                .status(HttpStatus.OK).message("Gửi OTP thành công").isSuccess(true).build();
     }
 
     public ResponseObject changePassword(Authentication authentication, ChangePasswordRequest request) {
@@ -172,20 +193,7 @@ public class AuthService {
                     .build();
         }
 
-        if (account.getOtp() != null) {
-            account.getOtp().resetOTP();
-        } else {
-            account.setOtp(new OTPInformation());
-        }
-        account = accountRepository.save(account);
-        try {
-            mailService.sendOTP(account);
-        } catch (Exception ex) {
-            log.error(ex.getMessage());
-            throw new OpalException("Gửi OTP thất bại, vui lòng thử lại sau!");
-        }
-        return ResponseObject.builder()
-                .status(HttpStatus.OK).message("Gửi OTP thành công").isSuccess(true).build();
+        return updateOTPThenSend(account);
     }
 
     public ResponseObject validateOTP(ValidateOTPRequest request) {
@@ -212,5 +220,38 @@ public class AuthService {
         otpRepo.delete(otp);
 
         return ResponseObject.builder().status(HttpStatus.OK).isSuccess(true).message("Xác thực thành công!").build();
+    }
+
+    public ResponseObject forgetPassword(String email) {
+        Account account = accountRepository.findAccountByEmail(email).orElseThrow(() -> new OpalException("Tài khoản không tồn tại"));
+        if (account.getStatus().equals(AccountStatus.PENDING)) {
+            return ResponseObject.builder()
+                    .status(HttpStatus.OK).message("Tài khoản chưa xác thực OTP").isSuccess(true).build();
+        }
+        account.setOtp(new OTPInformation());
+        account = accountRepository.save(account);
+        try {
+            mailService.sendOTPForPassword(account);
+        } catch (MessagingException ex) {
+            log.error(ex.getMessage());
+            throw new OpalException("Gửi OTP thất bại, vui lòng thử lại sau!");
+        }
+
+        return ResponseObject.builder().status(HttpStatus.OK).isSuccess(true).message("Gửi mã xác thực thành công").build();
+    }
+
+    public ResponseObject changePasswordWithOTP(ChangePasswordOTP request) {
+        Account account = accountRepository.findAccountByEmail(request.getEmail()).orElseThrow(() -> new OpalException("Tài khoản không tồn tại"));
+        OTPInformation otp = account.getOtp();
+        if (otp == null || !otp.getOtpCode().equals(request.getOtp())) {
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).isSuccess(false).message("Mã xác thực không đúng").build();
+        }
+
+        account.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        account.setOtp(null);
+        accountRepository.saveAndFlush(account);
+        otpRepo.delete(otp);
+
+        return ResponseObject.builder().status(HttpStatus.OK).isSuccess(true).message("Cập nhật mật khẩu thành công").build();
     }
 }

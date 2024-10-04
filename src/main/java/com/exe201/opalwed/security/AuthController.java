@@ -43,6 +43,16 @@ public class AuthController {
         return ResponseEntity.ok().body(authService.sendOtp(email));
     }
 
+    @GetMapping("/forget-password")
+    public ResponseEntity<ResponseObject> forgetPassword(@RequestParam String email) {
+        return ResponseEntity.ok().body(authService.forgetPassword(email));
+    }
+
+    @PostMapping("/update-otp-password")
+    public ResponseEntity<ResponseObject> updateOPTPassword(@Valid @RequestBody ChangePasswordOTP request) {
+        return ResponseEntity.ok().body(authService.changePasswordWithOTP(request));
+    }
+
     @PostMapping("/validateOTP")
     public ResponseEntity<ResponseObject> getOtpByMail(@RequestBody ValidateOTPRequest request) {
         return ResponseEntity.ok().body(authService.validateOTP(request));
