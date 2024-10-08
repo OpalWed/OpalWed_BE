@@ -18,15 +18,17 @@ public class CustomerApplication {
     private Information customerInformation;
 
     private LocalDateTime weddingDate;
-
+    @Column(columnDefinition = "nvarchar(300)")
     private String weddingLocation;
 
     private Integer numberOfGuests;
-
+    @Column(columnDefinition = "nvarchar(MAX)")
     private String weddingDescription;
 
     private CustomerApplicationStatus status;
 
     private LocalDateTime createdDate;
+
+    private String requiredServicesFile;
 
 }

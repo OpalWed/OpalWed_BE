@@ -17,7 +17,7 @@ public class Partner {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @Column(columnDefinition = "nvarchar(50)")
     private String partnerName;
 
     @OneToOne(cascade = CascadeType.PERSIST)
@@ -35,7 +35,7 @@ public class Partner {
     private Set<Product> products;
 
     private int successEvent;
-
+    @Column(columnDefinition = "nvarchar(MAX)")
     private String note;
 
     public void setImages(Set<PartnerImage> images) {
