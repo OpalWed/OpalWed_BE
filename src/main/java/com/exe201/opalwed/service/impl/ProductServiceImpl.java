@@ -8,9 +8,11 @@ import com.exe201.opalwed.model.*;
 import com.exe201.opalwed.repository.PartnerRepository;
 import com.exe201.opalwed.repository.ProductRepository;
 import com.exe201.opalwed.service.ProductService;
+import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -57,6 +59,63 @@ public class ProductServiceImpl implements ProductService {
 
         Page<ProductDTO> products = productRepository.findByUtilityAndStatus(utilityType,ProductStatus.AVAILABLE , pageable)
                 .map(this::mapEntityToDTO);
+
+        return ResponseObject.builder()
+                .data(new PaginationResponse<>(products))
+                .isSuccess(true)
+                .message("Danh sách sản phẩm")
+                .status(HttpStatus.OK)
+                .build();
+    }
+
+    @Override
+    public ResponseObject getAllProducts(String name, BudgetLevel budgetLevel, WeddingConcept weddingConcept, UtilityType utility, ProductStatus status, Pageable pageable) {
+
+        Specification<Product> spec = (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            // Filter by name
+            if (name != null && !name.isEmpty()) {
+                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + name.toLowerCase() + "%"));
+            }
+
+            // Filter by BudgetLevel
+            if (budgetLevel != null) {
+                predicates.add(criteriaBuilder.equal(root.get("budgetLevel"), budgetLevel));
+            }
+
+            // Filter by WeddingConcept
+            if (weddingConcept != null) {
+                predicates.add(criteriaBuilder.equal(root.get("weddingConcept"), weddingConcept));
+            }
+
+            // Filter by UtilityType
+            if (utility != null) {
+                predicates.add(criteriaBuilder.equal(root.get("utility"), utility));
+            }
+
+            // Filter by ProductStatus
+            if (status != null) {
+                predicates.add(criteriaBuilder.equal(root.get("status"), status));
+            }
+
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+
+        Page<ProductDTO> products = productRepository.findAll(spec, pageable).map(this::mapEntityToDTO);
+
+        return ResponseObject.builder()
+                .data(new PaginationResponse<>(products))
+                .isSuccess(true)
+                .message("Danh sách sản phẩm")
+                .status(HttpStatus.OK)
+                .build();
+    }
+
+    @Override
+    public ResponseObject getProductsByPartnerId(Long partnerId, Pageable pageable) {
+
+        Page<ProductDTO> products = productRepository.findByPartnerId(partnerId, pageable).map(this::mapEntityToDTO);
 
         return ResponseObject.builder()
                 .data(new PaginationResponse<>(products))
