@@ -30,7 +30,7 @@ public class PaymentController {
         String hashData = vnPayConfig.getPaymentURL(vnpParamsMap, false);
         String vnpSecureHash = vnPayConfig.hmacSHA512(vnPayConfig.secretKey, hashData);
         queryUrl += "&vnp_SecureHash=" + vnpSecureHash;
-        String paymentUrl = vnPayConfig.vnp_PayUrl + "?" + queryUrl;
+        String paymentUrl = vnPayConfig.vnpPayUrl + "?" + queryUrl;
 
 
         return ResponseObject.builder()

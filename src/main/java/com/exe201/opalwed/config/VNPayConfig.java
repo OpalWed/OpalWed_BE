@@ -16,22 +16,22 @@ import java.util.stream.Collectors;
 public class VNPayConfig {
 
     @Value("${payment.vnpay.payUrl}")
-    public String vnp_PayUrl;
+    public String vnpPayUrl;
 
     @Value("${payment.vnpay.returnUrl}")
-    public String vnp_ReturnUrl;
+    public String vnpReturnUrl;
 
     @Value("${payment.vnpay.TmnCode}")
-    public String vnp_TmnCode;
+    public String vnpTmnCode;
 
     @Value("${payment.vnpay.secretKey}")
     public String secretKey;
 
     @Value("${payment.vnpay.version}")
-    public String vnp_Version;
+    public String vnpVersion;
 
     @Value("${payment.vnpay.command}")
-    public String vnp_Command;
+    public String vnpCommand;
 
     public String hmacSHA512(final String key, final String data) {
         try {
@@ -81,15 +81,15 @@ public class VNPayConfig {
 
     public Map<String, String> getVNPayConfig() {
         Map<String, String> vnpParamsMap = new HashMap<>();
-        vnpParamsMap.put("vnp_Version", vnp_Version);
-        vnpParamsMap.put("vnp_Command", vnp_Command);
-        vnpParamsMap.put("vnp_TmnCode", vnp_TmnCode);
+        vnpParamsMap.put("vnp_Version", vnpVersion);
+        vnpParamsMap.put("vnp_Command", vnpCommand);
+        vnpParamsMap.put("vnp_TmnCode", vnpTmnCode);
         vnpParamsMap.put("vnp_CurrCode", "VND");
         vnpParamsMap.put("vnp_TxnRef", getRandomNumber(8));
         vnpParamsMap.put("vnp_OrderInfo", "Thanh toan don hang:" + getRandomNumber(8));
         vnpParamsMap.put("vnp_OrderType", "other");
         vnpParamsMap.put("vnp_Locale", "vn");
-        vnpParamsMap.put("vnp_ReturnUrl", vnp_ReturnUrl);
+        vnpParamsMap.put("vnp_ReturnUrl", vnpReturnUrl);
 
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
