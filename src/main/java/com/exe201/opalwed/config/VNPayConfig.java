@@ -33,6 +33,8 @@ public class VNPayConfig {
     @Value("${payment.vnpay.command}")
     public String vnpCommand;
 
+    private final Random random = new Random();
+
     public String hmacSHA512(final String key, final String data) {
         try {
 
@@ -41,8 +43,8 @@ public class VNPayConfig {
             }
             final Mac hmac512 = Mac.getInstance("HmacSHA512");
             byte[] hmacKeyBytes = key.getBytes();
-            final SecretKeySpec secretKey = new SecretKeySpec(hmacKeyBytes, "HmacSHA512");
-            hmac512.init(secretKey);
+            final SecretKeySpec secretKeySpec = new SecretKeySpec(hmacKeyBytes, "HmacSHA512");
+            hmac512.init(secretKeySpec);
             byte[] dataBytes = data.getBytes(StandardCharsets.UTF_8);
             byte[] result = hmac512.doFinal(dataBytes);
             StringBuilder sb = new StringBuilder(2 * result.length);
@@ -70,11 +72,10 @@ public class VNPayConfig {
     }
 
     public String getRandomNumber(int len) {
-        Random rnd = new Random();
         String chars = "0123456789";
         StringBuilder sb = new StringBuilder(len);
         for (int i = 0; i < len; i++) {
-            sb.append(chars.charAt(rnd.nextInt(chars.length())));
+            sb.append(chars.charAt(random.nextInt(chars.length())));
         }
         return sb.toString();
     }
