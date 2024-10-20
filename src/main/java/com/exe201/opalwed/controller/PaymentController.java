@@ -18,8 +18,7 @@ import java.util.Map;
 public class PaymentController {
 
     private final VNPayConfig vnPayConfig;
-    @Operation(description = "Call endpoint này để nhận về url rồi redirect user tới url để thanh toán, cần truyền order/số tiền, ip của user trong header")
-    @GetMapping("/create-payment")
+    @GetMapping("/create-payment-vnpay")
     public ResponseObject createPayment(HttpServletRequest request) {
 
         Map<String, String> vnpParamsMap = vnPayConfig.getVNPayConfig();
@@ -39,7 +38,6 @@ public class PaymentController {
                 .data(paymentUrl)
                 .build();
     }
-
 
     @Operation(description = "Xử lý riêng cho vnpay call backend")
     @GetMapping("/vn-pay-callback")
