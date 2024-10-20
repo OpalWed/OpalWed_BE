@@ -1,19 +1,22 @@
 package com.exe201.opalwed.service.impl;
 
-import com.exe201.opalwed.dto.PartnerImageDTO;
-import com.exe201.opalwed.dto.PartnerInformationDTO;
-import com.exe201.opalwed.dto.PartnerUtilityDTO;
-import com.exe201.opalwed.dto.ResponseObject;
+import com.exe201.opalwed.dto.*;
 import com.exe201.opalwed.exception.OpalException;
 import com.exe201.opalwed.model.*;
 import com.exe201.opalwed.repository.PartnerRepository;
 import com.exe201.opalwed.service.PartnerService;
+import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -193,6 +196,35 @@ public class PartnerServiceImpl implements PartnerService {
                 .isSuccess(true)
                 .data(mapEntityToDTO(partner))
                 .build();
+    }
+
+    @Override
+    public ResponseObject getAllPartners(String name, PartnerStatus status, Pageable pageable) {
+
+        Specification<Partner> spec = (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            // Filter by name
+            if (name != null && !name.isEmpty()) {
+                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("partnerName")), "%" + name.toLowerCase() + "%"));
+            }
+            // Filter by ProductStatus
+            if (status != null) {
+                predicates.add(criteriaBuilder.equal(root.get("status"), status));
+            }
+
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+        Page<PartnerInformationDTO> partners = partnerRepository.findAll(spec, pageable).map(this::mapEntityToDTO);
+
+        return ResponseObject.builder()
+                .message("Lấy danh sách partner thành công!")
+                .isSuccess(true)
+                .data(new PaginationResponse<>(partners))
+                .build();
+
+
+
     }
 
 

@@ -2,10 +2,15 @@ package com.exe201.opalwed.controller;
 
 import com.exe201.opalwed.dto.PartnerInformationDTO;
 import com.exe201.opalwed.dto.ResponseObject;
+import com.exe201.opalwed.model.PartnerStatus;
+import com.exe201.opalwed.model.ProductStatus;
 import com.exe201.opalwed.service.PartnerService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -59,6 +64,16 @@ public class PartnerController {
     @GetMapping("/{id}")
     public ResponseEntity<ResponseObject> getPartnerById(@PathVariable Long id) {
         ResponseObject responseObject = partnerService.getPartnerById(id);
+        return ResponseEntity.ok().body(responseObject);
+    }
+
+    @Operation(summary = "Get all partners",description = "Get all partners")
+    @GetMapping
+    public ResponseEntity<ResponseObject> getAllPartners(@RequestParam(required = false) String name,
+                                                         @RequestParam(required = false) String status,
+                                                         @PageableDefault(page = 0, size = 20, direction = Sort.Direction.ASC) Pageable pagination) {
+        PartnerStatus statusEnum = (status != null) ? PartnerStatus.valueOf(status) : null;
+        ResponseObject responseObject = partnerService.getAllPartners(name, statusEnum, pagination);
         return ResponseEntity.ok().body(responseObject);
     }
 

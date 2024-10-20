@@ -13,6 +13,7 @@ public class ProductDTO {
     private Long partnerId;
 
     private String productName;
+    private String partnerName;
     private String description;
     private String image;
     private String price;
