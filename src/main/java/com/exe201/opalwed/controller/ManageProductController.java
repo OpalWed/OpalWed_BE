@@ -72,7 +72,11 @@ public class ManageProductController {
         ResponseObject responseObject = productService.changeProductStatus(id);
         return ResponseEntity.ok().body(responseObject);
     }
-
+    @GetMapping("/{id}")
+    public ResponseEntity<ResponseObject> getProductById(@PathVariable Long id) {
+        ResponseObject responseObject = productService.getProductById(id);
+        return ResponseEntity.ok().body(responseObject);
+    }
 
 
 }

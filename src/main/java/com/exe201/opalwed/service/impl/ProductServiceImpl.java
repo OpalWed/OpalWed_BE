@@ -222,6 +222,7 @@ public class ProductServiceImpl implements ProductService {
                 .utility(product.getUtility().name())
                 .weddingConcept(product.getWeddingConcept().name())
                 .status(product.getStatus().name())
+                .partnerName(product.getPartner().getPartnerName())
                 .build();
     }
 
