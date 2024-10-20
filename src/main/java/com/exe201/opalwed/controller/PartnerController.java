@@ -20,7 +20,13 @@ public class PartnerController {
 
     @PostMapping("/new")
     @Operation(summary = "Create new partner",
-            description = "Create new partner with information. UTILITIES: RESTAURANT, CLOTHES, MAKEKUP, JEWELRY")
+            description = "Create new partner with information. UTILITIES: RESTAURANT,\n" +
+                    "    CLOTHES,\n" +
+                    "    MAKEUP,\n" +
+                    "    ACCESSORIES,\n" +
+                    "    PHOTOGRAPHY,\n" +
+                    "    DECORATION,\n" +
+                    "    INVITATION,")
     public ResponseEntity<ResponseObject> connectNewPartner(@Valid @RequestBody PartnerInformationDTO partnerInformation) {
         PartnerInformationDTO data = partnerService.connectNewPartner(partnerInformation);
 
@@ -42,14 +48,19 @@ public class PartnerController {
         return ResponseEntity.ok().body(responseObject);
     }
 
-    @Operation(summary = "Update status",description = "Update status of partner: PENDING, APPROVED, CANCELLED. send partnerId and status")
-    @PostMapping("/update-status")
-    public ResponseEntity<ResponseObject> updatePartnerStatus(@RequestBody PartnerInformationDTO partnerInformation) {
-        ResponseObject responseObject = partnerService.updatePartnerStatus(partnerInformation.getPartnerId(), partnerInformation.getStatus());
+    @Operation(summary = "Update status",description = "Update status of partner: PENDING, ACTIVE, INACTIVE. send partnerId, Pending là cho nó k bị nhảy data ở db")
+    @PutMapping("/update-status/{id}")
+    public ResponseEntity<ResponseObject> updatePartnerStatus(@PathVariable Long id) {
+        ResponseObject responseObject = partnerService.updatePartnerStatus(id);
         return ResponseEntity.ok().body(responseObject);
     }
 
-
+    @Operation(summary = "Get partner by id",description = "Get partner by id")
+    @GetMapping("/{id}")
+    public ResponseEntity<ResponseObject> getPartnerById(@PathVariable Long id) {
+        ResponseObject responseObject = partnerService.getPartnerById(id);
+        return ResponseEntity.ok().body(responseObject);
+    }
 
 
 

@@ -4,6 +4,10 @@ public enum UtilityType {
     RESTAURANT,
     CLOTHES,
     MAKEUP,
-    JEWELRY,
+    ACCESSORIES,
+    PHOTOGRAPHY,
+    DECORATION,
+    INVITATION,
+
 
 }

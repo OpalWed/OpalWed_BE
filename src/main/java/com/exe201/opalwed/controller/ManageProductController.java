@@ -67,6 +67,11 @@ public class ManageProductController {
         ResponseObject responseObject = productService.deleteProduct(id);
         return ResponseEntity.ok().body(responseObject);
     }
+    @PutMapping("/status/{id}")
+    public ResponseEntity<ResponseObject> changeProductStatus(@PathVariable Long id) {
+        ResponseObject responseObject = productService.changeProductStatus(id);
+        return ResponseEntity.ok().body(responseObject);
+    }
 
 
 

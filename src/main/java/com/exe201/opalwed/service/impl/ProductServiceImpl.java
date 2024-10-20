@@ -177,6 +177,24 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public ResponseObject changeProductStatus(Long id) {
+        Product product = productRepository.findById(id).orElseThrow(() -> new OpalException("Không tìm thấy sản phẩm"));
+        if(product.getStatus().equals(ProductStatus.AVAILABLE)) {
+            product.setStatus(ProductStatus.UNAVAILABLE);
+        }else{
+            product.setStatus(ProductStatus.AVAILABLE);
+        }
+
+        productRepository.save(product);
+        return ResponseObject.builder()
+                .data(null)
+                .isSuccess(true)
+                .message("Thay đổi trạng thái sản phẩm thành công!")
+                .status(HttpStatus.OK)
+                .build();
+    }
+
+    @Override
     public ResponseObject deleteProduct(Long id) {
 
         Product product = productRepository.findById(id).orElseThrow(() -> new OpalException("Không tìm thấy sản phẩm"));

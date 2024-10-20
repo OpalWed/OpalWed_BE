@@ -19,6 +19,7 @@ public interface ProductService {
     ResponseObject getProductsByPartnerId(Long partnerId, Pageable pageable);
     ResponseObject addProduct(ProductDTO product);
     ResponseObject updateProduct(ProductDTO product);
+    ResponseObject changeProductStatus(Long id);
     ResponseObject deleteProduct(Long id);
 
 
