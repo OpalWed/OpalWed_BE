@@ -4,5 +4,5 @@ public enum BudgetLevel {
     LOW,
     MEDIUM,
     HIGH,
-    VERY_HIGH
+    PREMIUM
 }

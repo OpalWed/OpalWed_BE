@@ -24,9 +24,15 @@ public class ProductController {
 
     @GetMapping
     @Operation(summary = "Get products by budget and concept",
-            description = "CONCEPT: TRADITIONAL, MODERN, MINIMALISM, VINTAGE </br> " +
-                    "BUDGET LEVEL: LOW, MEDIUM, HIGH, VERY_HIGH </br> " +
-                    "UTILITY TYPE: RESTAURANT, CLOTHES, MAKEUP, JEWELRY </br> " +
+            description = "CONCEPT: TRADITIONAL,EUROPE, MINIMALISM, VINTAGE </br> " +
+                    "BUDGET LEVEL: LOW, MEDIUM, HIGH, PREMIUM </br> " +
+                    "UTILITY TYPE: RESTAURANT,\n" +
+                    "    CLOTHES,\n" +
+                    "    MAKEUP,\n" +
+                    "    ACCESSORIES,\n" +
+                    "    PHOTOGRAPHY,\n" +
+                    "    DECORATION,\n" +
+                    "    INVITATION, </br> " +
                     "{</br>" +
                     "  \"page\": 0,</br>" +
                     "  \"size\": 1</br>" +

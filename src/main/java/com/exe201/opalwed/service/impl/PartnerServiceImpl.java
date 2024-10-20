@@ -9,6 +9,7 @@ import com.exe201.opalwed.model.*;
 import com.exe201.opalwed.repository.PartnerRepository;
 import com.exe201.opalwed.service.PartnerService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,7 +65,7 @@ public class PartnerServiceImpl implements PartnerService {
                 .partnerInformation(information)
                 .note(req.getNote())
                 .successEvent(0)
-                .status(PartnerStatus.PENDING)
+                .status(PartnerStatus.ACTIVE)
                 .build();
 
         if (req.getUtilities() != null) {
@@ -80,6 +81,17 @@ public class PartnerServiceImpl implements PartnerService {
         partner = partnerRepository.save(partner);
 
         return mapEntityToDTO(partner);
+    }
+
+    @Override
+    public ResponseObject getPartnerById(Long partnerId) {
+        Partner partner = partnerRepository.findById(partnerId).orElseThrow(()-> new OpalException("Partner không tồn tại!"));
+        return ResponseObject.builder()
+                .message("Lấy thông tin partner thành công!")
+                .isSuccess(true)
+                .data(mapEntityToDTO(partner))
+                .status(HttpStatus.OK)
+                .build();
     }
 
     @Override
@@ -167,9 +179,14 @@ public class PartnerServiceImpl implements PartnerService {
                 .build();
     }
     @Override
-    public ResponseObject updatePartnerStatus(Long partnerId, String status) {
+    public ResponseObject updatePartnerStatus(Long partnerId) {
         Partner partner = partnerRepository.findById(partnerId).orElseThrow(()-> new OpalException("Không tìm thấy partner!"));
-        partner.setStatus(PartnerStatus.valueOf(status));
+        if(partner.getStatus().equals(PartnerStatus.ACTIVE)){
+            partner.setStatus(PartnerStatus.INACTIVE);
+        }
+        else {
+            partner.setStatus(PartnerStatus.ACTIVE);
+        }
         partner = partnerRepository.save(partner);
         return ResponseObject.builder()
                 .message("Cập nhật trạng thái partner thành công!")
