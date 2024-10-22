@@ -46,6 +46,17 @@ public class ProductController {
         ResponseObject responseObject = productService.getProductsByBudgetAndConceptAndUtility(BudgetLevel.valueOf(budgetLevel), WeddingConcept.valueOf(weddingConcept), UtilityType.valueOf(utilityType), pagination);
         return ResponseEntity.ok().body(responseObject);
     }
+    
+    
+    @GetMapping("/budget-utility")
+    public ResponseEntity<ResponseObject> getProductsByBudget(
+            @PageableDefault(page = 0, size = 20, direction = Sort.Direction.ASC) Pageable pagination,
+            @RequestParam String budgetLevel,
+            @RequestParam String utilityType) {
+        ResponseObject responseObject = productService.getProductsByBudgetAndUtility(BudgetLevel.valueOf(budgetLevel), UtilityType.valueOf(utilityType), pagination);
+        return ResponseEntity.ok().body(responseObject);
+    }
+    
     @GetMapping("/{id}")
     public ResponseEntity<ResponseObject> getProductById(@PathVariable Long id) {
         ResponseObject responseObject = productService.getProductById(id);
