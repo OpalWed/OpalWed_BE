@@ -13,6 +13,10 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpecificationExecutor<Product> {
 
     Page<Product> findByBudgetLevelAndWeddingConceptAndStatusAndUtility(BudgetLevel budgetLevel, WeddingConcept weddingConcept, ProductStatus status,UtilityType utilityType, Pageable pageable);
+
+    Page<Product> findByBudgetLevelAndStatusAndUtility(BudgetLevel budgetLevel,ProductStatus status,UtilityType utilityType, Pageable pageable);
+
+
     Page<Product> findByUtilityAndStatus(UtilityType utilityType, ProductStatus status, Pageable pageable);
     Page<Product> findByPartnerId(Long partnerId, Pageable pageable);
 

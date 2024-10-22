@@ -9,6 +9,7 @@ public interface ProductService {
 
 
     ResponseObject getProductsByBudgetAndConceptAndUtility(BudgetLevel budgetLevel, WeddingConcept weddingConcept, UtilityType utilityType, Pageable pageable);
+    ResponseObject getProductsByBudgetAndUtility(BudgetLevel budgetLevel, UtilityType utilityType, Pageable pageable);
     ResponseObject getProductById(Long id);
 
     ResponseObject getProductByUtilityType(UtilityType utilityType, Pageable pageable);

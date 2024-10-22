@@ -42,6 +42,20 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public ResponseObject getProductsByBudgetAndUtility(BudgetLevel budgetLevel, UtilityType utilityType, Pageable pageable) {
+        Page<ProductDTO> products = productRepository.findByBudgetLevelAndStatusAndUtility(
+                        budgetLevel ,ProductStatus.AVAILABLE , utilityType , pageable)
+                .map(this::mapEntityToDTO);
+
+        return ResponseObject.builder()
+                .data(new PaginationResponse<>(products))
+                .isSuccess(true)
+                .message("Danh sách sản phẩm")
+                .status(HttpStatus.OK)
+                .build();
+    }
+
+    @Override
     public ResponseObject getProductById(Long id) {
 
         Product product = productRepository.findById(id).orElseThrow(() -> new OpalException("Không tìm thấy sản phẩm"));
