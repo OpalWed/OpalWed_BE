@@ -11,6 +11,8 @@ import java.time.LocalDateTime;
 @Builder
 public class ApplicationDTO {
 
+    private Long applicationId;
+
     private Long userId;
     @NotNull(message = "Wedding date cannot be null")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
@@ -29,5 +31,9 @@ public class ApplicationDTO {
     @NotNull(message = "Required services file cannot be null")
     @Size(max = 255, message = "Required services file name must not exceed 255 characters")
     private String requiredServicesFile;
+
+    private String status;
+
+    private String createdDate;
 
 }
