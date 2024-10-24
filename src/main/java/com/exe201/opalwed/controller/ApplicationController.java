@@ -6,12 +6,13 @@ import com.exe201.opalwed.service.CustomerApplicationService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("${api.endpoint.base-url}/application")
@@ -36,6 +37,20 @@ public class ApplicationController {
         return ResponseEntity.ok().body(responseObject);
     }
 
+
+    @GetMapping
+    public ResponseEntity<ResponseObject> getApplications(Authentication authentication,
+                                                          @PageableDefault(page = 0, size = 20, direction = Sort.Direction.ASC) Pageable pagination) {
+        ResponseObject responseObject = customerApplicationService.getApplications(authentication, pagination);
+        return ResponseEntity.ok().body(responseObject);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ResponseObject> getApplicationById(@PathVariable Long id) {
+
+        ResponseObject responseObject = customerApplicationService.getApplicationById(id);
+        return ResponseEntity.ok().body(responseObject);
+    }
 
 
 }
