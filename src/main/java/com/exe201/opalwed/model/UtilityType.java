@@ -1,13 +1,11 @@
 package com.exe201.opalwed.model;
 
 public enum UtilityType {
-    RESTAURANT,
+    RESTAURANTCONCEPT,
     CLOTHES,
     MAKEUP,
-    ACCESSORIES,
+    FLOWERS,
     PHOTOGRAPHY,
-    DECORATION,
     INVITATION,
-
 
 }
