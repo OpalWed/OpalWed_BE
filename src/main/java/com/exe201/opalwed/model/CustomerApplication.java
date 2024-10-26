@@ -20,7 +20,8 @@ public class CustomerApplication {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @ManyToOne
+    @JoinColumn(name = "customer_info_id")
     private Information customerInformation;
 
     private LocalDateTime weddingDate;
@@ -37,4 +38,9 @@ public class CustomerApplication {
 
     private String requiredServicesFile;
 
+    private int price;
+
+    private String paymentLinkId;
+
+    private PaymentStatus paymentStatus;
 }

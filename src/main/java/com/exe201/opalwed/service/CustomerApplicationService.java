@@ -7,7 +7,7 @@ import org.springframework.security.core.Authentication;
 
 public interface CustomerApplicationService {
 
-    ResponseObject createRequest(ApplicationDTO applicationDTO, Authentication authentication);
+    ResponseObject createRequest(ApplicationDTO applicationDTO, Authentication authentication) throws Exception;
 
     ResponseObject getApplications(Authentication authentication, Pageable pagination);
 
