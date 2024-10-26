@@ -12,4 +12,6 @@ public interface CustomerApplicationService {
     ResponseObject getApplications(Authentication authentication, Pageable pagination);
 
     ResponseObject getApplicationById(Long id);
+
+    ResponseObject getApplicationsManage(Pageable pagination);
 }

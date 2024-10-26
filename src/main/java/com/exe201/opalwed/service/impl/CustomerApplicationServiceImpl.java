@@ -20,6 +20,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.payos.PayOS;
+import vn.payos.exception.PayOSException;
 import vn.payos.type.CheckoutResponseData;
 import vn.payos.type.ItemData;
 import vn.payos.type.PaymentData;
@@ -64,18 +65,21 @@ public class CustomerApplicationServiceImpl implements CustomerApplicationServic
                 .build();
 
         customerApplication = customerApplicationRepository.save(customerApplication);
-        PaymentData requestData = getPaymentRequestData(customerApplication);
-        CheckoutResponseData data = payOS.createPaymentLink(requestData);
+        try{
+            PaymentData requestData = getPaymentRequestData(customerApplication);
+            CheckoutResponseData data = payOS.createPaymentLink(requestData);
+            customerApplication.setPaymentLinkId(data.getPaymentLinkId());
+            customerApplicationRepository.save(customerApplication);
 
-        customerApplication.setPaymentLinkId(data.getPaymentLinkId());
-        customerApplicationRepository.save(customerApplication);
-
-        return ResponseObject.builder()
-                .data(data)
-                .isSuccess(true)
-                .message("Yêu cầu của bạn đã được gửi, chúng tôi sẽ liên hệ với bạn sớm nhất có thể!")
-                .status(HttpStatus.OK)
-                .build();
+            return ResponseObject.builder()
+                    .data(data)
+                    .isSuccess(true)
+                    .message("Yêu cầu của bạn đã được gửi, chúng tôi sẽ liên hệ với bạn sớm nhất có thể!")
+                    .status(HttpStatus.OK)
+                    .build();
+        }catch (PayOSException e){
+            throw new OpalException(e.getMessage());
+        }
     }
 
     @Override
@@ -123,6 +127,28 @@ public class CustomerApplicationServiceImpl implements CustomerApplicationServic
                         .build())
                 .isSuccess(true)
                 .message("Lấy thông tin yêu cầu thành công")
+                .status(HttpStatus.OK)
+                .build();
+    }
+
+    @Override
+    public ResponseObject getApplicationsManage(Pageable pagination) {
+        Page<ApplicationDTO> applications = customerApplicationRepository.findAll(pagination)
+                .map(customerApplication -> ApplicationDTO.builder()
+                        .applicationId(customerApplication.getId())
+                        .userId(customerApplication.getCustomerInformation().getId())
+                        .createdDate(customerApplication.getCreatedDate().toString())
+                        .weddingDate(customerApplication.getWeddingDate())
+                        .weddingLocation(customerApplication.getWeddingLocation())
+                        .numberOfGuests(customerApplication.getNumberOfGuests())
+                        .weddingDescription(customerApplication.getWeddingDescription())
+                        .status(customerApplication.getStatus().toString())
+                        .requiredServicesFile(customerApplication.getRequiredServicesFile())
+                        .build());
+        return ResponseObject.builder()
+                .data(new PaginationResponse<>(applications))
+                .isSuccess(true)
+                .message("Lấy danh sách yêu cầu thành công")
                 .status(HttpStatus.OK)
                 .build();
     }
