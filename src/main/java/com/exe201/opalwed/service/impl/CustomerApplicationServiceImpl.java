@@ -7,15 +7,22 @@ import com.exe201.opalwed.exception.OpalException;
 import com.exe201.opalwed.model.CustomerApplication;
 import com.exe201.opalwed.model.CustomerApplicationStatus;
 import com.exe201.opalwed.model.Information;
+import com.exe201.opalwed.model.PaymentStatus;
 import com.exe201.opalwed.repository.CustomerApplicationRepository;
 import com.exe201.opalwed.repository.InformationRepository;
 import com.exe201.opalwed.service.CustomerApplicationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import vn.payos.PayOS;
+import vn.payos.type.CheckoutResponseData;
+import vn.payos.type.ItemData;
+import vn.payos.type.PaymentData;
 
 import java.time.LocalDateTime;
 
@@ -26,8 +33,19 @@ public class CustomerApplicationServiceImpl implements CustomerApplicationServic
     private final CustomerApplicationRepository customerApplicationRepository;
 
     private final InformationRepository informationRepository;
+
+    @Value("${payment.payos.returnUrl}")
+    private String returnUrl;
+
+    @Value("$payment.payos.cancelUrl}")
+    private String cancelUrl;
+
+    private final PayOS payOS;
+
+
     @Override
-    public ResponseObject createRequest(ApplicationDTO applicationDTO, Authentication authentication) {
+    @Transactional
+    public ResponseObject createRequest(ApplicationDTO applicationDTO, Authentication authentication) throws Exception {
 
         Information information = informationRepository.getInformationByAccountEmail(authentication.getName())
                 .orElseThrow(() -> new OpalException("Yêu cầu đăng nhập"));
@@ -40,13 +58,20 @@ public class CustomerApplicationServiceImpl implements CustomerApplicationServic
                 .weddingDescription(applicationDTO.getWeddingDescription())
                 .weddingLocation(applicationDTO.getWeddingLocation())
                 .numberOfGuests(applicationDTO.getNumberOfGuests())
+                .price(50000)
                 .status(CustomerApplicationStatus.INITIAL)
+                .paymentStatus(PaymentStatus.PENDING)
                 .build();
 
+        customerApplication = customerApplicationRepository.save(customerApplication);
+        PaymentData requestData = getPaymentRequestData(customerApplication);
+        CheckoutResponseData data = payOS.createPaymentLink(requestData);
+
+        customerApplication.setPaymentLinkId(data.getPaymentLinkId());
         customerApplicationRepository.save(customerApplication);
 
         return ResponseObject.builder()
-                .data(null)
+                .data(data)
                 .isSuccess(true)
                 .message("Yêu cầu của bạn đã được gửi, chúng tôi sẽ liên hệ với bạn sớm nhất có thể!")
                 .status(HttpStatus.OK)
@@ -99,6 +124,26 @@ public class CustomerApplicationServiceImpl implements CustomerApplicationServic
                 .isSuccess(true)
                 .message("Lấy thông tin yêu cầu thành công")
                 .status(HttpStatus.OK)
+                .build();
+    }
+
+    private PaymentData getPaymentRequestData(CustomerApplication application) {
+        final String productName = "Dịch vụ OpalWed";
+        final String description = "Dịch vụ tư vấn";
+
+        long orderCode = application.getId();
+        ItemData item = ItemData.builder()
+                .name(productName)
+                .price(application.getPrice())
+                .quantity(1)
+                .build();
+        return PaymentData.builder()
+                .orderCode(orderCode)
+                .description(description)
+                .amount(application.getPrice())
+                .item(item)
+                .returnUrl(returnUrl)
+                .cancelUrl(cancelUrl)
                 .build();
     }
 }
