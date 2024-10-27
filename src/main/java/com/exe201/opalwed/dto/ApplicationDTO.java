@@ -37,4 +37,10 @@ public class ApplicationDTO {
 
     private String createdDate;
 
+    private int price;
+
+    private String description;
+
+    private String paymentStatus;
+
 }
