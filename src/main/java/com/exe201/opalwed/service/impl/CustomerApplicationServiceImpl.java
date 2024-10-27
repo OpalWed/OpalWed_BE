@@ -137,6 +137,30 @@ public class CustomerApplicationServiceImpl implements CustomerApplicationServic
                 .map(customerApplication -> ApplicationDTO.builder()
                         .applicationId(customerApplication.getId())
                         .userId(customerApplication.getCustomerInformation().getId())
+                        .fullName(customerApplication.getCustomerInformation().getFullName())
+                        .createdDate(customerApplication.getCreatedDate().toString())
+                        .weddingDate(customerApplication.getWeddingDate())
+                        .weddingLocation(customerApplication.getWeddingLocation())
+                        .numberOfGuests(customerApplication.getNumberOfGuests())
+                        .weddingDescription(customerApplication.getWeddingDescription())
+                        .status(customerApplication.getStatus().toString())
+                        .requiredServicesFile(customerApplication.getRequiredServicesFile())
+                        .build());
+        return ResponseObject.builder()
+                .data(new PaginationResponse<>(applications))
+                .isSuccess(true)
+                .message("Lấy danh sách yêu cầu thành công")
+                .status(HttpStatus.OK)
+                .build();
+    }
+
+    @Override
+    public ResponseObject getApplicationsByDate(Pageable pagination, LocalDateTime fromDate, LocalDateTime toDate) {
+        Page<ApplicationDTO> applications = customerApplicationRepository.getCustomerApplicationsByCreatedDateBetween(fromDate, toDate, pagination)
+                .map(customerApplication -> ApplicationDTO.builder()
+                        .applicationId(customerApplication.getId())
+                        .userId(customerApplication.getCustomerInformation().getId())
+                        .fullName(customerApplication.getCustomerInformation().getFullName())
                         .createdDate(customerApplication.getCreatedDate().toString())
                         .weddingDate(customerApplication.getWeddingDate())
                         .weddingLocation(customerApplication.getWeddingLocation())
