@@ -2,6 +2,7 @@ package com.exe201.opalwed.controller;
 
 import com.exe201.opalwed.dto.ApplicationDTO;
 import com.exe201.opalwed.dto.ResponseObject;
+import com.exe201.opalwed.model.PaymentStatus;
 import com.exe201.opalwed.service.CustomerApplicationService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -51,5 +52,9 @@ public class ApplicationController {
         return ResponseEntity.ok().body(responseObject);
     }
 
+    @PutMapping("/{id}/{paymentStatus}")
+    public void updateApplicationStatus(@PathVariable Long id, @PathVariable PaymentStatus paymentStatus) {
+        customerApplicationService.updatePaymentStatus(id, paymentStatus);
+    }
 
 }

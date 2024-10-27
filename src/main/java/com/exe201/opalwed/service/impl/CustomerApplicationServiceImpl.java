@@ -98,6 +98,9 @@ public class CustomerApplicationServiceImpl implements CustomerApplicationServic
                         .weddingDescription(customerApplication.getWeddingDescription())
                         .status(customerApplication.getStatus().toString())
                         .requiredServicesFile(customerApplication.getRequiredServicesFile())
+                        .price(customerApplication.getPrice())
+                        .description(customerApplication.getWeddingDescription())
+                        .paymentStatus(customerApplication.getPaymentStatus().name())
                         .build());
 
         return ResponseObject.builder()
@@ -175,6 +178,15 @@ public class CustomerApplicationServiceImpl implements CustomerApplicationServic
                 .message("Lấy danh sách yêu cầu thành công")
                 .status(HttpStatus.OK)
                 .build();
+    }
+
+    @Override
+    public void updatePaymentStatus(Long id, PaymentStatus paymentStatus) {
+        CustomerApplication customerApplication = customerApplicationRepository.findById(id)
+                .orElseThrow(() -> new OpalException("Không tìm thấy yêu cầu"));
+        customerApplication.setPaymentStatus(paymentStatus);
+
+        customerApplicationRepository.save(customerApplication);
     }
 
     private PaymentData getPaymentRequestData(CustomerApplication application) {
