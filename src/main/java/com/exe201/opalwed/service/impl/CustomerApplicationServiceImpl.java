@@ -126,6 +126,8 @@ public class CustomerApplicationServiceImpl implements CustomerApplicationServic
                         .numberOfGuests(customerApplication.getNumberOfGuests())
                         .weddingDescription(customerApplication.getWeddingDescription())
                         .status(customerApplication.getStatus().toString())
+                        .price(customerApplication.getPrice())
+                        .paymentStatus(customerApplication.getPaymentStatus().name())
                         .requiredServicesFile(customerApplication.getRequiredServicesFile())
                         .build())
                 .isSuccess(true)
@@ -147,6 +149,33 @@ public class CustomerApplicationServiceImpl implements CustomerApplicationServic
                         .numberOfGuests(customerApplication.getNumberOfGuests())
                         .weddingDescription(customerApplication.getWeddingDescription())
                         .status(customerApplication.getStatus().toString())
+                        .price(customerApplication.getPrice())
+                        .paymentStatus(customerApplication.getPaymentStatus().name())
+                        .requiredServicesFile(customerApplication.getRequiredServicesFile())
+                        .build());
+        return ResponseObject.builder()
+                .data(new PaginationResponse<>(applications))
+                .isSuccess(true)
+                .message("Lấy danh sách yêu cầu thành công")
+                .status(HttpStatus.OK)
+                .build();
+    }
+
+    @Override
+    public ResponseObject getPaidApplicationsManage(Pageable pagination) {
+        Page<ApplicationDTO> applications = customerApplicationRepository.getAllByPaymentStatus(PaymentStatus.PAID, pagination)
+                .map(customerApplication -> ApplicationDTO.builder()
+                        .applicationId(customerApplication.getId())
+                        .userId(customerApplication.getCustomerInformation().getId())
+                        .fullName(customerApplication.getCustomerInformation().getFullName())
+                        .createdDate(customerApplication.getCreatedDate().toString())
+                        .weddingDate(customerApplication.getWeddingDate())
+                        .weddingLocation(customerApplication.getWeddingLocation())
+                        .numberOfGuests(customerApplication.getNumberOfGuests())
+                        .weddingDescription(customerApplication.getWeddingDescription())
+                        .status(customerApplication.getStatus().toString())
+                        .paymentStatus(customerApplication.getPaymentStatus().name())
+                        .price(customerApplication.getPrice())
                         .requiredServicesFile(customerApplication.getRequiredServicesFile())
                         .build());
         return ResponseObject.builder()

@@ -3,6 +3,7 @@ package com.exe201.opalwed.repository;
 
 import com.exe201.opalwed.model.CustomerApplication;
 import com.exe201.opalwed.model.Information;
+import com.exe201.opalwed.model.PaymentStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,6 +18,8 @@ import java.util.Optional;
 @Repository
 public interface CustomerApplicationRepository extends JpaRepository<CustomerApplication,Long> {
     Page<CustomerApplication> getCustomerApplicationsByCustomerInformation(Information information, Pageable pageable);
+
+    Page<CustomerApplication> getAllByPaymentStatus(PaymentStatus paymentStatus, Pageable pageable);
 
     Page<CustomerApplication> getCustomerApplicationsByCreatedDateBetween(LocalDateTime fromDate, LocalDateTime toDate, Pageable pagination);
 
