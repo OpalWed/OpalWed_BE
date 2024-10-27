@@ -53,6 +53,7 @@ public class ApplicationController {
     }
 
     @PutMapping("/{id}/{paymentStatus}")
+    @Operation(description = "id = orderId trên paramsURL, paymentStatus cũng vậy")
     public void updateApplicationStatus(@PathVariable Long id, @PathVariable PaymentStatus paymentStatus) {
         customerApplicationService.updatePaymentStatus(id, paymentStatus);
     }

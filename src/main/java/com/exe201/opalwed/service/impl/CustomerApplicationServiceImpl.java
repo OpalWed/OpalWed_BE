@@ -171,6 +171,9 @@ public class CustomerApplicationServiceImpl implements CustomerApplicationServic
                         .weddingDescription(customerApplication.getWeddingDescription())
                         .status(customerApplication.getStatus().toString())
                         .requiredServicesFile(customerApplication.getRequiredServicesFile())
+                        .price(customerApplication.getPrice())
+                        .description(customerApplication.getWeddingDescription())
+                        .paymentStatus(customerApplication.getPaymentStatus().name())
                         .build());
         return ResponseObject.builder()
                 .data(new PaginationResponse<>(applications))
