@@ -14,6 +14,7 @@ public class ApplicationDTO {
     private Long applicationId;
 
     private Long userId;
+    private String fullName;
     @NotNull(message = "Wedding date cannot be null")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime weddingDate;
