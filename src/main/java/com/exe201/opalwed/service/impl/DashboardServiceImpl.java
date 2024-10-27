@@ -73,19 +73,22 @@ public class DashboardServiceImpl implements DashboardService {
     @Override
     public ResponseObject getDailyRevenueForYear(int year) {
         List<Object[]> results = customerApplicationRepository.findDailyRevenueByYear(year);
-        Map<LocalDate, Long> dailyRevenueMap = new HashMap<>();
-
+        List<Map<String, Object>> dailyRevenueList = new ArrayList<>();
         for (Object[] result : results) {
             LocalDate date = (LocalDate) result[0];
             Long totalRevenue = (Long) result[1];
-            dailyRevenueMap.put(date, totalRevenue);
+            Map<String, Object> revenueEntry = new HashMap<>();
+            revenueEntry.put("date", date.toString());
+            revenueEntry.put("revenue", totalRevenue);
+            dailyRevenueList.add(revenueEntry);
         }
         return ResponseObject.builder()
-                .data(dailyRevenueMap)
+                .data(dailyRevenueList)
                 .status(HttpStatus.OK)
                 .isSuccess(true)
                 .message("Doanh thu hàng ngày trong năm " + year)
                 .build();
+
     }
 
 
