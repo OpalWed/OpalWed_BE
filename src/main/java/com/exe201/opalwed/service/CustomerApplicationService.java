@@ -18,6 +18,8 @@ public interface CustomerApplicationService {
 
     ResponseObject getApplicationsManage(Pageable pagination);
 
+    ResponseObject getPaidApplicationsManage(Pageable pagination);
+
     ResponseObject getApplicationsByDate(Pageable pagination, LocalDateTime fromDate, LocalDateTime toDate);
 
     void updatePaymentStatus(Long id, PaymentStatus paymentStatus);

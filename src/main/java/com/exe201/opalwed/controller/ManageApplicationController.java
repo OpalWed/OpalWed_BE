@@ -29,6 +29,12 @@ public class ManageApplicationController {
         return ResponseEntity.ok().body(responseObject);
     }
 
+    @GetMapping("/paid")
+    public ResponseEntity<ResponseObject> getPaidApplications(@PageableDefault(page = 0, size = 20, direction = Sort.Direction.ASC) Pageable pagination) {
+        ResponseObject responseObject = customerApplicationService.getApplicationsManage(pagination);
+        return ResponseEntity.ok().body(responseObject);
+    }
+
     @GetMapping("/filter-date")
     public ResponseEntity<ResponseObject> getApplicationsByDate(@PageableDefault(page = 0, size = 20, direction = Sort.Direction.ASC) Pageable pagination,
                                                                 @RequestParam LocalDateTime fromDate,
