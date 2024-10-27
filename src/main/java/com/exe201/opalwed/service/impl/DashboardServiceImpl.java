@@ -26,15 +26,23 @@ public class DashboardServiceImpl implements DashboardService {
         for (int month = 1; month <= 12; month++) {
             monthlyCounts.put(month, 0L);
         }
-
         for (Object[] row : results) {
             Integer month = (Integer) row[0];
             Long count = (Long) row[1];
             monthlyCounts.put(month, count);
         }
+        List<Map<String, Object>> formattedResults = new ArrayList<>();
+
+        for (int month = 1; month <= 12; month++) {
+            Map<String, Object> monthData = new HashMap<>();
+            monthData.put("month", "Tháng " + month);
+            monthData.put("application", monthlyCounts.get(month));
+            formattedResults.add(monthData);
+        }
+
 
         return ResponseObject.builder()
-                .data(monthlyCounts)
+                .data(formattedResults)
                 .status(HttpStatus.OK)
                 .isSuccess(true)
                 .message("Số lượng đơn theo tháng trong năm " + year)
