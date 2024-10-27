@@ -1,20 +1,23 @@
 package com.exe201.opalwed.service.impl;
 
 import com.exe201.opalwed.dto.ResponseObject;
+import com.exe201.opalwed.repository.AccountRepository;
 import com.exe201.opalwed.repository.CustomerApplicationRepository;
 import com.exe201.opalwed.service.DashboardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class DashboardServiceImpl implements DashboardService {
+
+    private final CustomerApplicationRepository customerApplicationRepository;
+    private final AccountRepository accountRepository;
     @Override
     public ResponseObject getApplicationCountData(int year) {
         List<Object[]> results = customerApplicationRepository.countApplicationsByMonthInYear(year);
@@ -36,16 +39,54 @@ public class DashboardServiceImpl implements DashboardService {
                 .isSuccess(true)
                 .message("Số lượng đơn theo tháng trong năm " + year)
                 .build();
-
-
-
     }
 
-    private final CustomerApplicationRepository customerApplicationRepository;
+    @Override
+    public ResponseObject getTotalCountUserRevenueApplication() {
 
+        LocalDateTime now = LocalDateTime.now();
+        Optional<Object[]> result = customerApplicationRepository.countTotalAndSumPriceForCurrentMonth(now);
 
+        Map<String, Long> resultMap = new HashMap<>();
+        resultMap.put("application-count", 0L);
+        resultMap.put("sum-revenue", 0L);
+        resultMap.put("user-count", accountRepository.count());
 
+        if (result.isPresent()) {
+            Object[] data = result.get();
+            if (data.length > 0) {
+                Object[] innerArray = (Object[]) data[0];
+                if (innerArray.length >= 2) {
+                    resultMap.put("application-count", (Long) innerArray[0]);
+                    resultMap.put("sum-revenue", (Long) innerArray[1]);
+                }
+            }
+        }
+        return ResponseObject.builder()
+                .data(resultMap)
+                .status(HttpStatus.OK)
+                .isSuccess(true)
+                .message("Tổng số đơn, tổng doanh thu của tháng hiện tại và tổng số người dùng")
+                .build();
+    }
 
+    @Override
+    public ResponseObject getDailyRevenueForYear(int year) {
+        List<Object[]> results = customerApplicationRepository.findDailyRevenueByYear(year);
+        Map<LocalDate, Long> dailyRevenueMap = new HashMap<>();
+
+        for (Object[] result : results) {
+            LocalDate date = (LocalDate) result[0];
+            Long totalRevenue = (Long) result[1];
+            dailyRevenueMap.put(date, totalRevenue);
+        }
+        return ResponseObject.builder()
+                .data(dailyRevenueMap)
+                .status(HttpStatus.OK)
+                .isSuccess(true)
+                .message("Doanh thu hàng ngày trong năm " + year)
+                .build();
+    }
 
 
 }

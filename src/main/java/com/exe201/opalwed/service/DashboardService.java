@@ -8,4 +8,7 @@ public interface DashboardService {
 
     ResponseObject getApplicationCountData(int year);
 
+    ResponseObject getTotalCountUserRevenueApplication();
+
+    ResponseObject getDailyRevenueForYear(int year);
 }

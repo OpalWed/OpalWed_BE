@@ -4,10 +4,7 @@ import com.exe201.opalwed.dto.ResponseObject;
 import com.exe201.opalwed.service.DashboardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 
@@ -24,6 +21,17 @@ public class DashboardController {
 
     ) {
         ResponseObject responseObject = dashboardService.getApplicationCountData(year);
+        return ResponseEntity.ok().body(responseObject);
+    }
+
+    @GetMapping("/total")
+    public ResponseEntity<ResponseObject> getTotalCount() {
+        ResponseObject responseObject = dashboardService.getTotalCountUserRevenueApplication();
+        return ResponseEntity.ok().body(responseObject);
+    }
+    @GetMapping("/daily/{year}")
+    public ResponseEntity<ResponseObject> getDailyRevenue(@PathVariable int year) {
+        ResponseObject responseObject = dashboardService.getDailyRevenueForYear(year);
         return ResponseEntity.ok().body(responseObject);
     }
 
