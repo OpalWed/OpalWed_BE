@@ -22,5 +22,5 @@ public interface CustomerApplicationService {
 
     ResponseObject getApplicationsByDate(Pageable pagination, LocalDateTime fromDate, LocalDateTime toDate);
 
-    void updatePaymentStatus(Long id, PaymentStatus paymentStatus);
+    ResponseObject updatePaymentStatus(Long id, PaymentStatus paymentStatus);
 }

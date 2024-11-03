@@ -213,12 +213,19 @@ public class CustomerApplicationServiceImpl implements CustomerApplicationServic
     }
 
     @Override
-    public void updatePaymentStatus(Long id, PaymentStatus paymentStatus) {
+    public ResponseObject updatePaymentStatus(Long id, PaymentStatus paymentStatus) {
         CustomerApplication customerApplication = customerApplicationRepository.findById(id)
                 .orElseThrow(() -> new OpalException("Không tìm thấy yêu cầu"));
         customerApplication.setPaymentStatus(paymentStatus);
 
         customerApplicationRepository.save(customerApplication);
+
+        return ResponseObject.builder()
+                .isSuccess(true)
+                .data(null)
+                .message("Cập nhật trạng thái thanh toán thành công")
+                .status(HttpStatus.OK)
+                .build();
     }
 
     private PaymentData getPaymentRequestData(CustomerApplication application) {
