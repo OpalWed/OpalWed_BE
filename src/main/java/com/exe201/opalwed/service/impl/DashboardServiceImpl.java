@@ -74,7 +74,7 @@ public class DashboardServiceImpl implements DashboardService {
                 .data(resultMap)
                 .status(HttpStatus.OK)
                 .isSuccess(true)
-                .message("Tổng số đơn, tổng doanh thu của tháng hiện tại và tổng số người dùng")
+                .message("Tổng số đơn, tổng doanh thu và tổng số người dùng")
                 .build();
     }
 

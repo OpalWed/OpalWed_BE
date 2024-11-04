@@ -30,8 +30,8 @@ public interface CustomerApplicationRepository extends JpaRepository<CustomerApp
             "ORDER BY month")
     List<Object[]> countApplicationsByMonthInYear(@Param("year") int year);
 
-    @Query("SELECT COUNT(c), COALESCE(SUM(CASE WHEN MONTH(c.createdDate) = MONTH(:currentDate) AND YEAR(c.createdDate) = YEAR(:currentDate) THEN c.price ELSE 0 END), 0) " +
-            "FROM CustomerApplication c")
+    @Query("SELECT COUNT(c), coalesce(sum(c.price),0) " +
+            " FROM CustomerApplication c")
     Optional<Object[]> countTotalAndSumPriceForCurrentMonth(@Param("currentDate") LocalDateTime currentDate);
 
 
