@@ -26,6 +26,8 @@ import vn.payos.type.ItemData;
 import vn.payos.type.PaymentData;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -52,7 +54,7 @@ public class CustomerApplicationServiceImpl implements CustomerApplicationServic
                 .orElseThrow(() -> new OpalException("Yêu cầu đăng nhập"));
 
         CustomerApplication customerApplication = CustomerApplication.builder()
-                .createdDate(LocalDateTime.now())
+                .createdDate(ZonedDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh")).toLocalDateTime())
                 .customerInformation(information)
                 .requiredServicesFile(applicationDTO.getRequiredServicesFile())
                 .weddingDate(applicationDTO.getWeddingDate())
